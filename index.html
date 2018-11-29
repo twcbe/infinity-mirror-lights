@@ -5,15 +5,17 @@
   <title></title>
   <script src="/static/iro.min.js" ></script>
   <style>
-    /* .square {
-      margin: auto;
-      height: 40px;
-      width: 200px;
-      background-color: #f00;
-      border-radius: 20px;
-    } */
     .iro__slider {
       display: none;
+    }
+    #colorPicker {
+      min-height: 400px;
+      padding-top: 5%;
+      display: flex;
+      /* display: -webkit-flex; */
+      justify-content: center;
+      /* align-items: center; */
+      /* align-content: center; */
     }
   </style>
 </head>
@@ -41,41 +43,41 @@
       return localStorage.getItem("user_id");
     }
     var demo = new iro.ColorPicker("#colorPicker", {
-      width: 360,
-      height: 360,
-      markerRadius: 10,
+      width: 660,
+      height: 660,
+      markerRadius: 25,
       color: "#f00",
-      borderWidth: 4,
+      borderWidth: 10,
       padding: 4,
       anticlockwise: true,
       css: {
         // body: {
-        //   "background-color": "$color",
-        //   "color": "$color"
-        // },
-        // "#text": {
-        //   "border-color": "$color",
-        //   "color": "$color"
-        // },
-        // "#colorView": {
-        //   "background-color": "$color",
-          // "color": "$color"
-        // }
-      }});
-
-      demo.on("color:change", throttle((color) => {
-        post('pick_color', {color: JSON.stringify(color.rgb)});
-        document.body.style.background = color.hexString;
-      }, 150));
-
-      function post(url, headers) {
-        let request = new XMLHttpRequest();
-        request.open("POST",  url);
-        request.setRequestHeader('user_id', getUserId());
-        Object.keys(headers).map((header) => request.setRequestHeader(header, headers[header]));
-        request.send();
-      }
-    </script>
-  </body>
-  </html>
-  
+          //   "background-color": "$color",
+          //   "color": "$color"
+          // },
+          // "#text": {
+            //   "border-color": "$color",
+            //   "color": "$color"
+            // },
+            // "#colorView": {
+              //   "background-color": "$color",
+              // "color": "$color"
+              // }
+            }});
+            
+            demo.on("color:change", throttle((color) => {
+              post('pick_color', {color: JSON.stringify(color.rgb)});
+              document.body.style.background = color.hexString;
+            }, 150));
+            
+            function post(url, headers) {
+              let request = new XMLHttpRequest();
+              request.open("POST",  url);
+              request.setRequestHeader('user_id', getUserId());
+              Object.keys(headers).map((header) => request.setRequestHeader(header, headers[header]));
+              request.send();
+            }
+          </script>
+        </body>
+        </html>
+        

@@ -2,22 +2,48 @@ const express = require('express');
 const app =  express();
 const mqtt = require('mqtt');
 
-var mqttUrl = process.env.MQTT_URL || 'mqtt://localhost:1883';
-var topic = process.env.MQTT_TOPIC || 'color';
-// client = mqtt.createClient({encoding: 'binary'});
-var client = mqtt.connect(mqttUrl);
+var mqttUrl = process.env.MQTT_URL || 'mqtt://user:pass@localhost:1883';
+var topic = process.env.MQTT_TOPIC || 'led_ring_server';
+
+var options = {
+    clientId: 'mqttjs_' + Math.random().toString(16).substr(2, 8),
+    keepalive: 60,
+    reconnectPeriod: 1000,
+    protocolId: 'MQIsdp',
+    protocolVersion: 3,
+    clean: true,
+    encoding: 'utf8'
+};
+
+var client = mqtt.connect(mqttUrl, options);
 
 var userColorMap = {}; // {userId: [userId, userChosenColor, timestamp]}
-var repeatFlag = true;
-var cycleSpeed = 1;
+var repeatFlag = false;
+var cycleSpeed = 120;
 var needsPublish = false;
 
 function publishColors() {
-    var payload = [+repeatFlag, cycleSpeed].concat(Object.values(userColorMap)
-    .map(userData => [userData.userChosenColor.r, userData.userChosenColor.g, userData.userChosenColor.b]));
-    console.log(`payload : ${payload}`);
-    client.publish('test_topic', 'publishing');
-    client.publish(topic,new Buffer(Uint8Array.from(payload)));
+    var colors = Object.values(userColorMap)
+        .map(userData => [userData.userChosenColor.r, userData.userChosenColor.g, userData.userChosenColor.b]);
+    colors = [].concat.apply([], colors);
+    var payload = [+repeatFlag, cycleSpeed].concat(colors);
+
+    var uintArray = Uint8Array.from(payload);
+    var bufferPayload = Buffer.from(uintArray);
+
+    console.log("payload : ");
+    console.log(payload);
+    console.log(typeof(payload[0]));
+    console.log(typeof(payload[1]));
+    console.log(typeof(payload[2]));
+
+    console.log("uintArray : ");
+    console.log(uintArray);
+    
+    console.log("bufferPayload : ");
+    console.log(bufferPayload);
+
+    client.publish(topic, bufferPayload);
 }
 
 setInterval(function() {
