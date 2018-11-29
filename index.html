@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="/static/iro.min.js" ></script>
+  <style>
+    /* .square {
+      margin: auto;
+      height: 40px;
+      width: 200px;
+      background-color: #f00;
+      border-radius: 20px;
+    } */
+    .iro__slider {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- <div class="square" id="colorView" align="center"></div> -->
+  <div id="colorPicker"></div>
+  <script type="text/javascript">
+    function throttle (func, limit) {
+      var inThrottle;
+      return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+          func.apply(context, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    }
+    function getUserId() {
+      if(!localStorage.getItem("user_id")) {
+        localStorage.setItem("user_id", Math.random().toString().substring(2));
+      }
+      return localStorage.getItem("user_id");
+    }
+    var demo = new iro.ColorPicker("#colorPicker", {
+      width: 360,
+      height: 360,
+      markerRadius: 10,
+      color: "#f00",
+      borderWidth: 4,
+      padding: 4,
+      anticlockwise: true,
+      css: {
+        // body: {
+        //   "background-color": "$color",
+        //   "color": "$color"
+        // },
+        // "#text": {
+        //   "border-color": "$color",
+        //   "color": "$color"
+        // },
+        // "#colorView": {
+        //   "background-color": "$color",
+          // "color": "$color"
+        // }
+      }});
+
+      demo.on("color:change", throttle((color) => {
+        post('pick_color', {color: JSON.stringify(color.rgb)});
+        document.body.style.background = color.hexString;
+      }, 150));
+
+      function post(url, headers) {
+        let request = new XMLHttpRequest();
+        request.open("POST",  url);
+        request.setRequestHeader('user_id', getUserId());
+        Object.keys(headers).map((header) => request.setRequestHeader(header, headers[header]));
+        request.send();
+      }
+    </script>
+  </body>
+  </html>
+  
